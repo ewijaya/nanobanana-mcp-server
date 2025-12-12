@@ -251,8 +251,8 @@ class ImageStorageService:
                 if os.path.exists(path):
                     try:
                         os.remove(path)
-                    except:
-                        pass
+                    except OSError as cleanup_error:
+                        self.logger.warning(f"Failed to cleanup file {path}: {cleanup_error}")
             raise e
 
     def get_image_info(self, image_id: str) -> Optional[StoredImageInfo]:

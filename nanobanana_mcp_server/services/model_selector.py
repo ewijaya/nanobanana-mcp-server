@@ -126,10 +126,8 @@ class ModelSelector:
         resolution = kwargs.get("resolution", "").lower()
         if resolution in ["4k", "high", "2k"]:
             quality_score += 3
-        elif resolution == "4k":
-            # 4K explicitly requires Pro model
-            self.logger.info("4K resolution requested - Pro model required")
-            return ModelTier.PRO
+            if resolution == "4k":
+                self.logger.debug("4K resolution requested - quality score boosted")
 
         # Batch size consideration
         n = kwargs.get("n", 1)
