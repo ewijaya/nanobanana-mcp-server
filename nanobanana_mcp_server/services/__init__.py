@@ -63,12 +63,16 @@ def initialize_services(server_config: ServerConfig, gemini_config: GeminiConfig
     # Initialize enhanced services for workflows.md implementation
     out_dir = server_config.image_output_dir
     # Always use ~/nanobanana-images for database to avoid polluting output directories
-    db_dir = Path.home() / "nanobanana-images"
-    db_dir.mkdir(parents=True, exist_ok=True)
-    _image_database_service = ImageDatabaseService(
-        db_path=str(db_dir / "images.db"),
-        disabled=server_config.disable_database
-    )
+    # Only create db_dir if database is enabled
+    if server_config.disable_database:
+        _image_database_service = ImageDatabaseService(disabled=True)
+    else:
+        db_dir = Path.home() / "nanobanana-images"
+        db_dir.mkdir(parents=True, exist_ok=True)
+        _image_database_service = ImageDatabaseService(
+            db_path=str(db_dir / "images.db"),
+            disabled=False
+        )
     # Use a subdirectory within the configured output directory for temp images
     temp_images_dir = os.path.join(out_dir, "temp_images")
     _image_storage_service = ImageStorageService(gemini_config, temp_images_dir)
