@@ -1,6 +1,7 @@
 """Service registry for dependency injection."""
 
 import os
+from pathlib import Path
 from typing import Optional
 
 from ..config.settings import (
@@ -61,8 +62,11 @@ def initialize_services(server_config: ServerConfig, gemini_config: GeminiConfig
 
     # Initialize enhanced services for workflows.md implementation
     out_dir = server_config.image_output_dir
+    # Always use ~/nanobanana-images for database to avoid polluting output directories
+    db_dir = Path.home() / "nanobanana-images"
+    db_dir.mkdir(parents=True, exist_ok=True)
     _image_database_service = ImageDatabaseService(
-        db_path=os.path.join(out_dir, "images.db"),
+        db_path=str(db_dir / "images.db"),
         disabled=server_config.disable_database
     )
     # Use a subdirectory within the configured output directory for temp images
